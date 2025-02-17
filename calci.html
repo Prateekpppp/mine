@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- style part -->
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">  
+
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/calci.css">
+
+
+    <title>Calci App</title>
+</head>
+<body>
+
+    <div class="app d-flex align-items-center justify-content-center vh-100">
+        <div class="sections bg-dark container rounded-3 p-5">
+            <div class="sections calci-parent container rounded-3 p-5 justify-content-between d-flex flex-row">
+                <div></div>
+                <div class="calci-box rounded-3 d-flex flex-column bg-dark">
+                    <div class="screen w-100 d-flex flex-column p-3">
+                        <div class="output text-start text-light"></div>
+                        <div class="input text-end text-light"></div>
+                    </div>
+                    <div class="inputSection d-flex flex-column-reverse p-3">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- script part -->
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+    <script src="js/calci.js"></script>
+
+    <script>
+        let specialCharPair = {
+            'CE':'clear',
+            '0':'zero',
+            '=':'=',
+            '/':(a,b)=>a/b,
+            '+':(a,b)=>a+b,
+            '-':(a,b)=>a-b,
+            'X':(a,b)=>a*b
+        }
+        let specialChar = Object.keys(specialCharPair)
+
+        function createBtn(){
+            let cnt = 0;
+
+            for(let i=0;i<4;i++){
+                $('.inputSection').append(
+                    `<div class="d-flex flex-row calci-row rc-${i}"></div>`
+                )
+                for(let j=0;j<4;j++){
+                    if(i == 0){
+
+                        $(`.rc-${i}`).append(`
+                            <div class="inputBtn rounded-circle p-4 m-2 btn btn-${(j!=1)?'danger specialChar':'dark'}">${specialChar[j]}</div>
+                        `);
+
+                    } else{
+                        if((j+1)%4 == 0){
+                            $(`.rc-${i}`).append(`
+                                <div class="inputBtn rounded-circle p-4 m-2 btn btn-danger specialChar">${specialChar[j+i]}</div>
+                            `);
+                        } else{
+                            cnt+=1
+                            $(`.rc-${i}`).append(`
+                                <div class="inputBtn rounded-circle p-4 m-2 btn btn-dark">${cnt}</div>
+                            `);
+                        }
+
+                        
+                    }
+                }
+            }
+        }
+
+        createBtn()
+
+
+        let operant1 = '';
+        let operant2 = '';
+        let operator = '';
+
+        $('.inputBtn').click(function(){
+
+            let input = $('.input').html();
+
+            if($(this).html() == 'CE'){
+                operant1 = '';
+                operant2 = '';
+                operator = '';
+                $('.input').html('');
+                $('.output').html('');
+                return;
+            }
+            if($(this).html() == '='){
+                return $('.output').html(operator(operant1,operant2));
+            }
+
+            if(!specialChar.includes($(this).html())){
+                if(!operator){
+                    operant1 += $(this).html();
+                } else{
+                    operant2 += $(this).html();
+
+                }
+            } else{
+                if(!input.length || operator){
+                    alert('Please Input Some Value');
+                    return;
+                } else{
+                    operator = specialCharPair[$(this).html()];
+                }
+            }
+            $('.input').append($(this).html())
+        })
+
+    </script>
+
+</body>
+</html>
